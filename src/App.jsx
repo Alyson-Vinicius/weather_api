@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Header from './components/Header.jsx'
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -15,6 +16,16 @@ function urlBase64ToUint8Array(base64String) {
   return outputArray;
 }
 
+function sendNotification() {
+  fetch('http://localhost:4000/send-notification', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Allow-Controll-Allow-Origin': '*'
+    }
+  });
+}
+
 export default function App() {
   useEffect(() => {
     if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -26,7 +37,7 @@ export default function App() {
             console.log('Service Worker registrado:', registration);
 
             // Substitua pela sua chave pública VAPID gerada no servidor
-            const vapidPublicKey = 'SUA_CHAVE_PUBLICA_VAPID_AQUI';
+            const vapidPublicKey = '__PUBLIC_KEY__';
             const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
 
             registration.pushManager.getSubscription().then(subscription => {
@@ -41,6 +52,14 @@ export default function App() {
               });
             }).then(newSubscription => {
               console.log('Nova inscrição para push:', JSON.stringify(newSubscription));
+              fetch('http://localhost:4000/subscribe', {
+                method: 'POST',
+                body: JSON.stringify(newSubscription),
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Allow-Controll-Allow-Origin': '*'
+                }
+              });
               // Aqui você deve enviar a subscription para seu servidor para armazenar e enviar push
             });
           }).catch(error => {
@@ -58,6 +77,9 @@ export default function App() {
   return (
     <>
       <Header />
+      <button onClick={sendNotification}>
+        Enviar notificação
+      </button>
     </>
   );
 }

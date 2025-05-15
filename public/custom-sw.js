@@ -3,8 +3,8 @@ self.addEventListener('push', event => {
   const title = data.title || 'Notificação';
   const options = {
     body: data.body || 'Você tem uma nova mensagem.',
-    icon: '/android-chrome-192x192.png',
-    badge: '/android-chrome-192x192.png'
+    icon: 'icon.png',
+    badge: 'icon.png'
   };
   event.waitUntil(
     self.registration.showNotification(title, options)
